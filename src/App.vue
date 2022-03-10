@@ -31,10 +31,10 @@
           <label for="kelvin" class="m-3">Kelvin</label>
         </div>
 
-        <div class="box has-text-centered" v-if="weather.cod=='404'">
+        <div class="box has-text-centered" v-if="weather.cod == '404'">
           <h2>Sorry, city not found</h2>
         </div>
-        <div class="box has-text-centered" v-if="weather.cod=='200'">
+        <div class="box has-text-centered" v-if="weather.cod == '200'">
           <div class="is-primary">
             <img v-bind:src="getIcon()" alt="Weather Icon" />
             <div class="is-size-3">{{ cityName }}</div>
@@ -47,20 +47,19 @@
             <div>{{ weather.weather[0].main }}</div>
           </div>
         </div>
-        
       </div>
     </main>
   </div>
 </template>
 
 <script>
+import weatherService from "./weatherService";
+
 export default {
   name: "App",
   data() {
     return {
-      apiKey: "6591c384ed91f3bdafb834bc7542e47a",
-      urlBase: "http://api.openweathermap.org/data/2.5/",
-      urlIcon: "http://openweathermap.org/img/wn/",
+      // urlIcon: "http://openweathermap.org/img/wn/",
       query: "",
       weather: {},
       unit: "metric",
@@ -68,8 +67,9 @@ export default {
   },
   methods: {
     async fetchWeather() {
-      const url = `${this.urlBase}weather?q=${this.query}&units=${this.unit}&appid=${this.apiKey}`;
-      this.weather = await (await fetch(url)).json();
+      this.weather = await weatherService
+                          .get(this.query, this.unit)
+                          .then(res => res.data)
     },
     dateBuilder() {
       let d = new Date();

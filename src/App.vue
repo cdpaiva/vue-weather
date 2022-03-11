@@ -31,22 +31,21 @@
           <label for="kelvin" class="m-3">Kelvin</label>
         </div>
 
-        <div class="box has-text-centered" v-if="weather.cod == '404'">
-          <h2>Sorry, city not found</h2>
-        </div>
-        <div class="box has-text-centered" v-if="weather.cod == '200'">
-          <div class="is-primary">
-            <img v-bind:src="getIcon()" alt="Weather Icon" />
-            <div class="is-size-3">{{ cityName }}</div>
-            <div>
-              {{ dateBuilder() }}
-            </div>
-          </div>
-          <div>
-            <div class="is-size-2">{{ temperatureWithUnit() }}</div>
-            <div>{{ weather.weather[0].main }}</div>
-          </div>
-        </div>
+        <searchFailed
+          v-if="cityNotFound || displayErrorMessage"
+          :displayErrorMessage="displayErrorMessage"
+        >
+        </searchFailed>
+
+        <weather-display
+          v-if="weather.cod == '200'"
+          :city="cityName"
+          :weatherType="weather.weather[0].main"
+          :temperature="weather.main.temp"
+          :unit="unit"
+          :icon="weather.weather[0].icon"
+        >
+        </weather-display>
       </div>
     </main>
   </div>
@@ -54,85 +53,42 @@
 
 <script>
 import weatherService from "./weatherService";
+import weatherDisplay from "./components/weatherDisplay.vue";
+import searchFailed from "./components/searchFailed.vue";
 
 export default {
   name: "App",
+  components: {
+    weatherDisplay,
+    searchFailed,
+  },
   data() {
     return {
-      // urlIcon: "http://openweathermap.org/img/wn/",
       query: "",
       weather: {},
       unit: "metric",
+      cityNotFound: false,
+      displayErrorMessage: false,
     };
   },
   methods: {
     async fetchWeather() {
-      this.weather = await weatherService
-                          .get(this.query, this.unit)
-                          .then(res => res.data)
-    },
-    dateBuilder() {
-      let d = new Date();
-      let months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-      let days = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
-      let day = days[d.getDay()];
-      let date = d.getDate();
-      let month = months[d.getMonth()];
-      let year = d.getFullYear();
-      return `${day} ${date} ${month} ${year}`;
-    },
-    temperatureWithUnit() {
-      const mapToUnits = {
-        metric: "°C",
-        imperial: "°F",
-        "": "K",
-      };
-      return `${this.weather.main.temp.toFixed(1)} ${mapToUnits[this.unit]}`;
-    },
-    getIcon() {
-      const mapToIcon = {
-        "01d": "sun--v1.png",
-        "02d": "partly-cloudy-day--v1.png",
-        "03d": "partly-cloudy-day--v1.png",
-        "04d": "partly-cloudy-day--v1.png",
-        "09d": "rain.png",
-        "10d": "rain.png",
-        "11d": "storm--v1.png",
-        "13d": "snow.png",
-        "50d": "windy-weather.png",
-        "01n": "full-moon.png",
-        "02n": "partly-cloudy-night.png",
-        "03n": "partly-cloudy-night.png",
-        "04n": "partly-cloudy-night.png",
-        "09n": "rain.png",
-        "10n": "rain.png",
-        "11n": "storm--v1.png",
-        "13n": "snow.png",
-        "50n": "windy-weather.png",
-      };
-      console.log(mapToIcon[this.weather.weather[0].icon]);
-      return require(`./assets/${mapToIcon[this.weather.weather[0].icon]}`);
+      this.cityNotFound = false;
+      this.displayErrorMessage = false;
+      this.weather = {};
+
+      await weatherService
+        .get(this.query, this.unit)
+        .then((res) => {
+          this.weather = res.data;
+        })
+        .catch((err) => {
+          if (err.response.status === 404) {
+            this.cityNotFound = true;
+            return;
+          }
+          this.displayErrorMessage = true;
+        });
     },
   },
   computed: {
@@ -146,5 +102,3 @@ export default {
   },
 };
 </script>
-
-<style></style>

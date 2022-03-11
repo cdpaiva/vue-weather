@@ -73,6 +73,10 @@ export default {
   },
   methods: {
     async fetchWeather() {
+      if(!this.query){
+        return
+      }
+
       this.cityNotFound = false;
       this.displayErrorMessage = false;
       this.weather = {};

@@ -15,6 +15,5 @@ export default {
     props: {
         displayErrorMessage: Boolean
     }
-
 }
 </script>

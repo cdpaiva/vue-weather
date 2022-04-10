@@ -1,51 +1,26 @@
 <template>
   <div id="app">
     <main>
-      <div class="container">
-        <h2 class="title has-text-centered m-5">Weather App</h2>
+      <div class="container is-fluid">
+        <PromptForAPIKey v-if="!hasKey" />
 
-        <input
-          type="text"
-          class="input is-info"
-          placeholder="Search by city"
-          v-model="query"
-          @keyup.enter="fetchWeather"
-        />
+        <h2 class="title has-text-centered m-3">Weather App</h2>
 
-        <div class="block has-text-centered m-3">
-          <button @click="fetchWeather" class="button is-info">Search</button>
-        </div>
+        <Search @fetch-weather="fetchWeather" :hasKey="hasKey" />
 
-        <div class="section has-text-centered">
-          <h3 class="is-size-3">Choose the unit:</h3>
-          <input type="radio" name="celsius" value="metric" v-model="unit" />
-          <label for="celsius" class="m-3">Celsius</label>
-          <input
-            type="radio"
-            name="farenheit"
-            value="imperial"
-            v-model="unit"
-          />
-          <label for="farenheit" class="m-3">Farenheit</label>
-          <input type="radio" name="kelvin" value="" v-model="unit" />
-          <label for="kelvin" class="m-3">Kelvin</label>
-        </div>
-
-        <searchFailed
+        <SearchFailed
           v-if="cityNotFound || displayErrorMessage"
           :displayErrorMessage="displayErrorMessage"
-        >
-        </searchFailed>
+        />
 
-        <weather-display
+        <Weather-display
           v-if="weather.cod == '200'"
           :city="cityName"
           :weatherType="weather.weather[0].main"
           :temperature="weather.main.temp"
           :unit="unit"
           :icon="weather.weather[0].icon"
-        >
-        </weather-display>
+        />
       </div>
     </main>
   </div>
@@ -53,56 +28,64 @@
 
 <script>
 import weatherService from "./weatherService";
-import weatherDisplay from "./components/weatherDisplay.vue";
-import searchFailed from "./components/searchFailed.vue";
+import WeatherDisplay from "./components/WeatherDisplay.vue";
+import SearchFailed from "./components/SearchFailed.vue";
+import PromptForAPIKey from "./components/PromptForAPIKey.vue";
+import Search from "./components/Search.vue";
 
 export default {
   name: "App",
   components: {
-    weatherDisplay,
-    searchFailed,
+    WeatherDisplay,
+    SearchFailed,
+    PromptForAPIKey,
+    Search,
   },
   data() {
     return {
-      query: "",
+      // query: "",
       weather: {},
       unit: "metric",
       cityNotFound: false,
       displayErrorMessage: false,
-    };
+      hasKey: false,
+    }
   },
   methods: {
-    async fetchWeather() {
-      if(!this.query){
+    checkAPIKey() {
+      this.hasKey = process.env.VUE_APP_API_KEY != undefined
+    },
+    async fetchWeather(query, unit) {
+      if (!query) {
         return
       }
 
-      this.cityNotFound = false;
-      this.displayErrorMessage = false;
-      this.weather = {};
+      this.unit = unit
+      this.cityNotFound = false
+      this.displayErrorMessage = false
+      this.weather = {}
 
       await weatherService
-        .get(this.query, this.unit)
+        .get(query, unit)
         .then((res) => {
-          this.weather = res.data;
+          this.weather = res.data
         })
         .catch((err) => {
           if (err.response.status === 404) {
-            this.cityNotFound = true;
-            return;
+            this.cityNotFound = true
+            return
           }
-          this.displayErrorMessage = true;
-        });
+          this.displayErrorMessage = true
+        })
     },
   },
   computed: {
     cityName() {
-      return `${this.weather.name}, ${this.weather.sys.country}`;
+      return `${this.weather.name}, ${this.weather.sys.country}`
     },
   },
-  watch: {
-    // re-fetch whenever unit changes
-    unit: "fetchWeather",
+  mounted() {
+    this.checkAPIKey()
   },
-};
+}
 </script>

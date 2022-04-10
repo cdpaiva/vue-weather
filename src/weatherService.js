@@ -1,6 +1,6 @@
 import service from "./service"
 
-const apiKey = "6591c384ed91f3bdafb834bc7542e47a"
+const apiKey = process.env.VUE_APP_API_KEY
 
 export default {
     get(query,unit){

@@ -40,7 +40,7 @@ export default {
         "October",
         "November",
         "December",
-      ];
+      ]
       let days = [
         "Sunday",
         "Monday",
@@ -49,12 +49,12 @@ export default {
         "Thursday",
         "Friday",
         "Saturday",
-      ];
-      let day = days[d.getDay()];
-      let date = d.getDate();
-      let month = months[d.getMonth()];
-      let year = d.getFullYear();
-      return `${day} ${date} ${month} ${year}`;
+      ]
+      let day = days[d.getDay()]
+      let date = d.getDate()
+      let month = months[d.getMonth()]
+      let year = d.getFullYear()
+      return `${day} ${date} ${month} ${year}`
     },
     getIcon() {
       const mapToIcon = {
@@ -76,17 +76,17 @@ export default {
         "11n": "storm--v1.png",
         "13n": "snow.png",
         "50n": "windy-weather.png",
-      };
-      return require(`../assets/${mapToIcon[this.icon]}`);
+      }
+      return require(`../assets/${mapToIcon[this.icon]}`)
     },
     temperatureWithUnit() {
       const mapToUnits = {
         metric: "°C",
         imperial: "°F",
         "": "K",
-      };
-      return `${this.temperature.toFixed(1)} ${mapToUnits[this.unit]}`;
+      }
+      return `${this.temperature.toFixed(1)} ${mapToUnits[this.unit]}`
     },
   },
-};
+}
 </script>

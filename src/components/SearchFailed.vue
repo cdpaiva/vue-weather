@@ -1,3 +1,12 @@
+<script>
+export default {
+    name: "searchFailed",
+    props: {
+        displayErrorMessage: Boolean
+    }
+}
+</script>
+
 <template>
     <div class="box has-text-centered">
         <h2 v-if="displayErrorMessage">
@@ -8,12 +17,3 @@
         </h2>
     </div>
 </template>
-
-<script>
-export default {
-    name: "searchFailed",
-    props: {
-        displayErrorMessage: Boolean
-    }
-}
-</script>

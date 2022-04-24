@@ -1,37 +1,9 @@
-<template>
-  <div id="app">
-    <main>
-      <div class="container is-fluid">
-        <PromptForAPIKey v-if="!hasKey" />
-
-        <h2 class="title has-text-centered m-3">Weather App</h2>
-
-        <Search @fetch-weather="fetchWeather" :hasKey="hasKey" />
-
-        <SearchFailed
-          v-if="cityNotFound || displayErrorMessage"
-          :displayErrorMessage="displayErrorMessage"
-        />
-
-        <Weather-display
-          v-if="weather.cod == '200'"
-          :city="cityName"
-          :weatherType="weather.weather[0].main"
-          :temperature="weather.main.temp"
-          :unit="unit"
-          :icon="weather.weather[0].icon"
-        />
-      </div>
-    </main>
-  </div>
-</template>
-
 <script>
-import weatherService from "./weatherService";
-import WeatherDisplay from "./components/WeatherDisplay.vue";
-import SearchFailed from "./components/SearchFailed.vue";
-import PromptForAPIKey from "./components/PromptForAPIKey.vue";
-import Search from "./components/Search.vue";
+import weatherService from "./weatherService"
+import WeatherDisplay from "./components/WeatherDisplay.vue"
+import SearchFailed from "./components/SearchFailed.vue"
+import PromptForAPIKey from "./components/PromptForAPIKey.vue"
+import SearchBar from "./components/SearchBar.vue"
 
 export default {
   name: "App",
@@ -39,7 +11,7 @@ export default {
     WeatherDisplay,
     SearchFailed,
     PromptForAPIKey,
-    Search,
+    SearchBar,
   },
   data() {
     return {
@@ -54,7 +26,7 @@ export default {
     checkAPIKey() {
       this.hasKey = process.env.VUE_APP_API_KEY != undefined
     },
-    async fetchWeather(query, unit) {
+    fetchWeather(query, unit) {
       if (!query) {
         return
       }
@@ -64,7 +36,7 @@ export default {
       this.displayErrorMessage = false
       this.weather = {}
 
-      await weatherService
+      weatherService
         .get(query, unit)
         .then((res) => {
           this.weather = res.data
@@ -88,3 +60,31 @@ export default {
   },
 }
 </script>
+
+<template>
+  <div id="app">
+    <main>
+      <div class="container is-fluid">
+        <PromptForAPIKey v-if="!hasKey" />
+
+        <h2 class="title has-text-centered m-3">Weather App</h2>
+
+        <SearchBar @fetch-weather="fetchWeather" :has-key="hasKey" />
+
+        <SearchFailed
+          v-if="cityNotFound || displayErrorMessage"
+          :display-error-message="displayErrorMessage"
+        />
+
+        <WeatherDisplay
+          v-if="weather.cod == '200'"
+          :city="cityName"
+          :weather-type="weather.weather[0].main"
+          :temperature="weather.main.temp"
+          :unit="unit"
+          :icon="weather.weather[0].icon"
+        />
+      </div>
+    </main>
+  </div>
+</template>

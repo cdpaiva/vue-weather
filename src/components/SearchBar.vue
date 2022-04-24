@@ -1,3 +1,25 @@
+<script>
+export default {
+  name: "SearchBar",
+  props: {
+    hasKey: Boolean,
+  },
+  emits: ["fetchWeather"],
+  data() {
+    return {
+      query: "",
+      unit: "metric",
+    }
+  },
+  watch: {
+    // re-fetches whenever unit changes
+    unit() {
+      this.$emit("fetchWeather", this.query, this.unit)
+    },
+  },
+}
+</script>
+
 <template>
   <div class="columns">
     <div class="column is-half is-offset-one-quarter">
@@ -35,25 +57,3 @@
     <label for="kelvin" class="m-3">Kelvin</label>
   </div>
 </template>
-
-<script>
-export default {
-  name: "Search",
-  props: {
-    hasKey: Boolean,
-  },
-  emits: ["fetchWeather"],
-  data() {
-    return {
-      query: "",
-      unit: "metric",
-    };
-  },
-  watch: {
-    // re-fetches whenever unit changes
-    unit() {
-      this.$emit("fetchWeather", this.query, this.unit);
-    },
-  },
-};
-</script>

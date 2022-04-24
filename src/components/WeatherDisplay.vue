@@ -1,19 +1,3 @@
-<template>
-  <div class="box has-text-centered">
-    <div class="is-primary">
-      <img v-bind:src="getIcon()" alt="Weather Icon" />
-      <div class="is-size-3">{{ city }}</div>
-      <div>
-        {{ dateBuilder() }}
-      </div>
-    </div>
-    <div>
-      <div class="is-size-2">{{ temperatureWithUnit() }}</div>
-      <div>{{ weatherType }}</div>
-    </div>
-  </div>
-</template>
-
 <script>
 export default {
   name: "weatherDisplay",
@@ -26,7 +10,7 @@ export default {
   },
   methods: {
     dateBuilder() {
-      let d = new Date();
+      let d = new Date()
       let months = [
         "January",
         "February",
@@ -41,7 +25,7 @@ export default {
         "November",
         "December",
       ]
-      let days = [
+      let weekdays = [
         "Sunday",
         "Monday",
         "Tuesday",
@@ -50,11 +34,11 @@ export default {
         "Friday",
         "Saturday",
       ]
-      let day = days[d.getDay()]
+      let weekday = weekdays[d.getDay()]
       let date = d.getDate()
       let month = months[d.getMonth()]
       let year = d.getFullYear()
-      return `${day} ${date} ${month} ${year}`
+      return `${weekday} ${date} ${month} ${year}`
     },
     getIcon() {
       const mapToIcon = {
@@ -90,3 +74,19 @@ export default {
   },
 }
 </script>
+
+<template>
+  <div class="box has-text-centered">
+    <div class="is-primary">
+      <img v-bind:src="getIcon()" alt="Weather Icon" />
+      <div class="is-size-3">{{ city }}</div>
+      <div>
+        {{ dateBuilder() }}
+      </div>
+    </div>
+    <div>
+      <div class="is-size-2">{{ temperatureWithUnit() }}</div>
+      <div>{{ weatherType }}</div>
+    </div>
+  </div>
+</template>

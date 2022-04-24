@@ -43,7 +43,6 @@ export default {
   },
   data() {
     return {
-      // query: "",
       weather: {},
       unit: "metric",
       cityNotFound: false,
